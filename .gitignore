@@ -10,3 +10,7 @@ pom.xml.asc
 /resources/public/js
 /out
 /.repl
+*.swp
+.idea/
+tunnit.iml
+
