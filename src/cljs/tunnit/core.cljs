@@ -12,13 +12,13 @@
 (def app-state (atom {:text "Viikko" :date ""}))
 
 (def week-map
-  {:1 {:name "Ma" :date ""}
-   :2 {:name "Ti" :date ""}
-   :3 {:name "Ke" :date ""}
-   :4 {:name "To" :date ""}
-   :5 {:name "Pe" :date ""}
-   :6 {:name "La" :date ""}
-   :7 {:name "Su" :date ""}})
+  {1 {:name "Ma" :date ""}
+   2 {:name "Ti" :date ""}
+   3 {:name "Ke" :date ""}
+   4 {:name "To" :date ""}
+   5 {:name "Pe" :date ""}
+   6 {:name "La" :date ""}
+   7 {:name "Su" :date ""}})
 
 (def date-format
   (format/formatter "dd.MM.yyyy"))
@@ -29,24 +29,17 @@
 (defn week-day [date]
   (time/day-of-week date))
 
-(defn week-dates []
-  ;(println (str "Tänään: "(time/day-of-week (time/now))))
-  ;(println (keyword (time/day-of-week (time/now))))
-
-  (assoc-in week-map [(keyword (str week-day (time/now)))
-                      :date] "Tänään")
-  )
+(def week-dates ;[]
+  (assoc-in week-map [(week-day (time/now))
+                      :date] (today)))
 
 (defcomponent week-view [app owner]
               (render [this]
-                      (om/update! app :date (today))
-
                       (ot/div
                         (map (fn [day]
                                (ot/output {:class "day-label"}
                                           (str (:name day) " " (:date day))))
-                               (vals week-map))
-                              ; (vals week-dates))
+                              (vals week-dates))
                         ))
               )
 
