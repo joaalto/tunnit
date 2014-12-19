@@ -12,7 +12,13 @@
 (def app-state (atom {:text "Viikko" :date ""}))
 
 (def week-map
-  {:mon ["Ma"] :tue ["Ti"] :wed ["Ke"] :thu ["To"] :fri ["Pe"] :sat ["La"] :sun ["Su"]})
+  {:1 {:name "Ma"}
+   :2 {:name "Ti"}
+   :3 {:name "Ke"}
+   :4 {:name "To"}
+   :5 {:name "Pe"}
+   :6 {:name "La"}
+   :7 {:name "Su"}})
 
 (def date-format
   (format/formatter "dd.MM.yyyy"))
@@ -20,13 +26,17 @@
 (defn today []
   (format/unparse date-format (time/now)))
 
+(defn week-dates []
+  (assoc-in week-map [time/day-of-week :name] "Tänään")
+  )
+
 (defcomponent week-view [app owner]
               (render [this]
                       (om/update! app :date (today))
 
                       (ot/div
                         (map (fn [day]
-                               (ot/output {:class "day-label"} (str (first day))))
+                               (ot/output {:class "day-label"} (str (:name day))))
                                (vals week-map))
                         ))
               )
