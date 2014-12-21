@@ -1,7 +1,7 @@
 (ns tunnit.core
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
-            [cljs-time.core :as time]
+            [cljs-time.core :as t]
             [cljs-time.format :as format]
             [om-tools.dom :as ot :include-macros true]
             [om-tools.core :refer-macros [defcomponent]]
@@ -24,13 +24,13 @@
   (format/formatter "dd.MM.yyyy"))
 
 (defn today []
-  (format/unparse date-format (time/now)))
+  (format/unparse date-format (t/now)))
 
 (defn week-day [date]
-  (time/day-of-week date))
+  (t/day-of-week date))
 
-(def week-dates ;[]
-  (assoc-in week-map [(week-day (time/now))
+(defn week-dates []
+  (assoc-in week-map [(week-day (t/now))
                       :date] (today)))
 
 (defcomponent week-view [app owner]
@@ -39,9 +39,8 @@
                         (map (fn [day]
                                (ot/output {:class "day-label"}
                                           (str (:name day) " " (:date day))))
-                              (vals week-dates))
-                        ))
-              )
+                              (vals (week-dates)))
+                        )))
 
 (defcomponent app-view [app owner]
               (render [this]
