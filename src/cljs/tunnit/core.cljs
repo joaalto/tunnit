@@ -31,7 +31,7 @@
 (def date-format
   (f/formatter "dd.MM."))
 
-(defn parse-date [date]
+(defn unparse-date [date]
   (f/unparse date-format date))
 
 (defn week-day-nr [date]
@@ -48,8 +48,8 @@
   (let [today-nr (week-day-nr (t/now))
         date (t/minus (t/now)
                       (t/days (- today-nr k)))]
-    [k (assoc v :date (parse-date date))]
-  ))
+    [k (assoc v :date (unparse-date date))]
+    ))
 
 (defn week-dates []
   (map-kv day-map count-date))
@@ -60,7 +60,7 @@
                         (map (fn [day]
                                (ot/output {:class "day-label"}
                                           (str (:name day) " " (:date day))))
-                              (vals (week-dates)))
+                             (vals (week-dates)))
                         )))
 
 (defcomponent app-view [app owner]
