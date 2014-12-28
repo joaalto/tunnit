@@ -48,7 +48,7 @@
   (let [today-nr (week-day-nr (t/now))
         date (t/minus (t/now)
                       (t/days (- today-nr k)))]
-    [k (assoc v :date (unparse-date date))]
+    [k (assoc v :date date)]
     ))
 
 (defn week-dates []
@@ -59,7 +59,7 @@
                       (ot/div
                         (map (fn [day]
                                (ot/output {:class "day-label"}
-                                          (str (:name day) " " (:date day))))
+                                          (str (:name day) " " (unparse-date (:date day)))))
                              (vals (week-dates)))
                         )))
 
