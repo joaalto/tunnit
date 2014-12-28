@@ -2,7 +2,7 @@
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [cljs-time.core :as t]
-            [cljs-time.format :as format]
+            [cljs-time.format :as f]
             [om-tools.dom :as ot :include-macros true]
             [om-tools.core :refer-macros [defcomponent]]
             [clojure.string :as str]
@@ -10,15 +10,13 @@
 
 (enable-console-print!)
 
-(defn week []
-  (subs
-    (get
-      (str/split
-        (format/unparse (format/formatters :week-date) (t/now))
-        #"-")
-      1) 1))
+(defn week-nr []
+  (subs (get (str/split
+               (f/unparse (f/formatters :week-date) (t/now))
+               #"-")
+             1) 1))
 
-(def app-state (atom {:text (str "Viikko " (week)) :date ""}))
+(def app-state (atom {:text (str "Viikko " (week-nr)) :date ""}))
 
 (def day-map
   {1 {:name "Ma" :date ""}
@@ -27,25 +25,34 @@
    4 {:name "To" :date ""}
    5 {:name "Pe" :date ""}
    6 {:name "La" :date ""}
-   7 {:name "Su" :date ""}})
+   7 {:name "Su" :date ""}
+   })
 
 (def date-format
-  (format/formatter "dd.MM."))
+  (f/formatter "dd.MM."))
 
-(defn update-vals [m f & args]
-  (reduce
-    (fn [r [k v]] (assoc r k (apply f v args)))
-    {} m))
+(defn parse-date [date]
+  (f/unparse date-format date))
 
-(defn today []
-  (format/unparse date-format (t/now)))
-
-(defn week-day [date]
+(defn week-day-nr [date]
   (t/day-of-week date))
 
+(defn map-kv
+  "Given a map and a function of two arguments, returns the map
+  resulting from applying the function to each of its entries. The
+  provided function must return a pair (a two-element sequence.)"
+  [m f]
+  (into {} (map (fn [[k v]] (f k v)) m)))
+
+(defn count-date [k v]
+  (let [today-nr (week-day-nr (t/now))
+        date (t/minus (t/now)
+                      (t/days (- today-nr k)))]
+    [k (assoc v :date (parse-date date))]
+  ))
+
 (defn week-dates []
-  (assoc-in day-map [(week-day (t/now))
-                      :date] (today)))
+  (map-kv day-map count-date))
 
 (defcomponent week-view [app owner]
               (render [this]
@@ -58,7 +65,7 @@
 
 (defcomponent app-view [app owner]
               (render [this]
-                      (print (format/show-formatters))
+                      (print (f/show-formatters))
                       (ot/div {:class "column-main"}
                               (dom/h1 nil (str (:text app) " " (:date app)))
                               (om/build week-view app)
