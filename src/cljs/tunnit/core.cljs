@@ -5,13 +5,22 @@
             [cljs-time.format :as format]
             [om-tools.dom :as ot :include-macros true]
             [om-tools.core :refer-macros [defcomponent]]
+            [clojure.string :as str]
             ))
 
 (enable-console-print!)
 
-(def app-state (atom {:text "Viikko" :date ""}))
+(defn week []
+  (subs
+    (get
+      (str/split
+        (format/unparse (format/formatters :week-date) (t/now))
+        #"-")
+      1) 1))
 
-(def week-map
+(def app-state (atom {:text (str "Viikko " (week)) :date ""}))
+
+(def day-map
   {1 {:name "Ma" :date ""}
    2 {:name "Ti" :date ""}
    3 {:name "Ke" :date ""}
@@ -21,7 +30,12 @@
    7 {:name "Su" :date ""}})
 
 (def date-format
-  (format/formatter "dd.MM.yyyy"))
+  (format/formatter "dd.MM."))
+
+(defn update-vals [m f & args]
+  (reduce
+    (fn [r [k v]] (assoc r k (apply f v args)))
+    {} m))
 
 (defn today []
   (format/unparse date-format (t/now)))
@@ -30,7 +44,7 @@
   (t/day-of-week date))
 
 (defn week-dates []
-  (assoc-in week-map [(week-day (t/now))
+  (assoc-in day-map [(week-day (t/now))
                       :date] (today)))
 
 (defcomponent week-view [app owner]
