@@ -16,10 +16,21 @@
                #"-")
              1) 1))
 
-(def app-state (atom {:text (str "Viikko " (week-nr)) :date ""}))
+(defn new-project [id name]
+  {:id id :name name
+   :entries {
+             1 {:hours 0}
+             2 {:hours 0}
+             3 {:hours 0}
+             4 {:hours 0}
+             5 {:hours 0}
+             6 {:hours 0}
+             7 {:hours 0}
+             }
+   })
 
 (def day-map
-  {1 {:name "Ma" :date ""}
+  {1 {:name "Ma" :date nil}
    2 {:name "Ti" :date ""}
    3 {:name "Ke" :date ""}
    4 {:name "To" :date ""}
@@ -28,40 +39,69 @@
    7 {:name "Su" :date ""}
    })
 
-(def date-format
-  (f/formatter "dd.MM."))
+(def project-seq
+  [{:id 111 :name "Projekti 1"
+    :entries {
+              1 {:hours 4.5}
+              2 {:hours 7.5}
+              }
+    }
+   {:id 222 :name "Projekti 2"
+    :entries {
+              1 {:hours 3.5}
+              2 {:hours 0}
+              3 {:hours 7.5}
+              }
+    }
+   {:id 333 :name "Projekti 3"
+    :entries {
+              1 {:hours 3.5}
+              2 {:hours 0}
+              3 {:hours 7.5}
+              }
+    }
+   ])
 
-(defn unparse-date [date]
-  (f/unparse date-format date))
+(def app-state (atom {
+                      :text (str "Viikko " (week-nr))
+                      :date ""
+                      :projects project-seq}))
 
-(defn week-day-nr [date]
-  (t/day-of-week date))
+(def date-format (f/formatter "dd.MM."))
 
-(defn map-kv
-  "Given a map and a function of two arguments, returns the map
-  resulting from applying the function to each of its entries. The
-  provided function must return a pair (a two-element sequence.)"
-  [m f]
+(defn unparse-date [date] (f/unparse date-format date))
+
+(defn week-day-nr [date] (t/day-of-week date))
+
+(defn map-kv [m f]
   (into {} (map (fn [[k v]] (f k v)) m)))
 
 (defn count-date [k v]
   (let [today-nr (week-day-nr (t/now))
         date (t/minus (t/now)
                       (t/days (- today-nr k)))]
-    [k (assoc v :date date)]
-    ))
+    [k (assoc v :date date)]))
 
 (defn week-dates []
   (map-kv day-map count-date))
 
-(defcomponent week-view [app owner]
+(defcomponent project-row [app]
               (render [this]
-                      (ot/div
-                        (map (fn [day]
-                               (ot/output {:class "day-label"}
-                                          (str (:name day) " " (unparse-date (:date day)))))
-                             (vals (week-dates)))
-                        )))
+                      (map (fn []))
+                      (ot/div {:class "hour-input"} nil
+                              (ot/input {:class "hour-entry" :value 7.5})
+                              )))
+
+(defcomponent week-view [app]
+              (render [this]
+                      (ot/div {:class "week-row"}
+                              (map (fn [[key day]]
+                                     (ot/div {:class "day-col"}
+                                             (ot/output {:class "day-label"}
+                                                        (str (:name day) " " (unparse-date (:date day))))
+                                             (om/build-all project-row (:projects app))))
+                                   (week-dates))
+                              )))
 
 (defcomponent app-view [app owner]
               (render [this]
