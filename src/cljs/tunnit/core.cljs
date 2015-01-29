@@ -40,20 +40,23 @@
    })
 
 (def project-seq
-  [{:id 111 :name "Projekti 1"
+  [{:id 111
+    :name "Projekti 1"
     :entries {
               1 {:hours 4.5}
               2 {:hours 7.5}
               }
     }
-   {:id 222 :name "Projekti 2"
+   {:id 222
+    :name "Projekti 2"
     :entries {
               1 {:hours 3.5}
               2 {:hours 0}
               3 {:hours 7.5}
               }
     }
-   {:id 333 :name "Projekti 3"
+   {:id 333
+    :name "Projekti 3"
     :entries {
               1 {:hours 3.5}
               2 {:hours 0}
@@ -85,9 +88,12 @@
 (defn week-dates []
   (map-kv day-map count-date))
 
-(defcomponent project-row [app]
+(defcomponent project-row [app owner m]
               (render [this]
-                      (map (fn []))
+                      (print (str "day: " (:day m)))
+                      (print (str "proj: " (get (first (:projects app)) :id)))
+                      ;(print (str "proj: " (:projects app)))
+                      (.log js/console app)
                       (ot/div {:class "hour-input"} nil
                               (ot/input {:class "hour-entry" :value 7.5})
                               )))
@@ -99,7 +105,9 @@
                                      (ot/div {:class "day-col"}
                                              (ot/output {:class "day-label"}
                                                         (str (:name day) " " (unparse-date (:date day))))
-                                             (om/build-all project-row (:projects app))))
+
+                                             (om/build-all project-row (:projects app) {:opts {:day key}})
+                                             ))
                                    (week-dates))
                               )))
 
