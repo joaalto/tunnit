@@ -45,6 +45,7 @@
     :entries {
               1 {:hours 4.5}
               2 {:hours 7.5}
+              7 {:hours 2.5}
               }
     }
    {:id 222
@@ -53,6 +54,7 @@
               1 {:hours 3.5}
               2 {:hours 0}
               3 {:hours 7.5}
+              7 {:hours 1.5}
               }
     }
    {:id 333
@@ -61,6 +63,10 @@
               1 {:hours 3.5}
               2 {:hours 0}
               3 {:hours 7.5}
+              4 {:hours 7.5}
+              5 {:hours 7.5}
+              6 {:hours 7.5}
+              7 {:hours 5.5}
               }
     }
    ])
@@ -88,15 +94,18 @@
 (defn week-dates []
   (map-kv day-map count-date))
 
-(defcomponent project-row [app owner m]
+(defcomponent project-row [project owner opts]
               (render [this]
-                      (print (str "day: " (:day m)))
-                      (print (str "proj: " (get (first (:projects app)) :id)))
-                      ;(print (str "proj: " (:projects app)))
-                      (.log js/console app)
+                      (let [todays-hours
+                            (map #(get-in % [:entries (:day opts) :hours])
+                                 (:projects opts))]
+
+                      (print "day: " (:day opts) ", hours: " todays-hours)
+                      ;(.log js/console opts)
+
                       (ot/div {:class "hour-input"} nil
                               (ot/input {:class "hour-entry" :value 7.5})
-                              )))
+                              ))))
 
 (defcomponent week-view [app]
               (render [this]
@@ -106,7 +115,9 @@
                                              (ot/output {:class "day-label"}
                                                         (str (:name day) " " (unparse-date (:date day))))
 
-                                             (om/build-all project-row (:projects app) {:opts {:day key}})
+                                             (om/build-all project-row (:projects app) {:opts
+                                                                                        {:day key
+                                                                                         :projects (:projects app)}})
                                              ))
                                    (week-dates))
                               )))
