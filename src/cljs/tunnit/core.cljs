@@ -16,19 +16,6 @@
                #"-")
              1) 1))
 
-(defn new-project [id name]
-  {:id id :name name
-   :entries {
-             1 {:hours 0}
-             2 {:hours 0}
-             3 {:hours 0}
-             4 {:hours 0}
-             5 {:hours 0}
-             6 {:hours 0}
-             7 {:hours 0}
-             }
-   })
-
 (def day-map
   {1 {:name "Ma" :date nil}
    2 {:name "Ti" :date ""}
@@ -93,22 +80,6 @@
 
 (defn week-dates []
   (map-kv day-map count-date))
-
-(defcomponent project-row [project owner opts]
-              (render [this]
-                      (let [todays-hours
-                            (map #(get-in % [:entries (:day opts) :hours])
-                                 (:projects opts))]
-
-                        (print "day: " (:day opts) "hours: " (:entries project))
-                        ;(print "day: " (:day opts) ", hours: " todays-hours)
-                        ;(.log js/console opts)
-
-                        (ot/div {:class "todays-hours"} nil
-                                (map (fn [hours] (ot/div {:class "hour-input"} nil
-                                                         ;(println "hours:" hours)
-                                                         (ot/input {:class "hour-entry" :value hours})))
-                                     todays-hours)))))
 
 (defcomponent project-entries [app]
               (render [this]
