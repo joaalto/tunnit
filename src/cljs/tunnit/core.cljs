@@ -100,12 +100,31 @@
                             (map #(get-in % [:entries (:day opts) :hours])
                                  (:projects opts))]
 
-                      (print "day: " (:day opts) ", hours: " todays-hours)
-                      ;(.log js/console opts)
+                        (print "day: " (:day opts) "hours: " (:entries project))
+                        ;(print "day: " (:day opts) ", hours: " todays-hours)
+                        ;(.log js/console opts)
 
-                      (ot/div {:class "hour-input"} nil
-                              (ot/input {:class "hour-entry" :value 7.5})
-                              ))))
+                        (ot/div {:class "todays-hours"} nil
+                                (map (fn [hours] (ot/div {:class "hour-input"} nil
+                                                         ;(println "hours:" hours)
+                                                         (ot/input {:class "hour-entry" :value hours})))
+                                     todays-hours)))))
+
+(defcomponent project-entries [app]
+              (render [this]
+                      (ot/div
+                        (map (fn [project]
+                               (ot/div {:class "project-row"}
+                               (for [day (range 1 8)]
+                                 (let [hours
+                                       (get-in project [:entries day :hours])]
+                                   (println "day: " day "hours: " hours)
+                                   (ot/input {:class "hour-entry" :value hours})
+                                   )
+                                 )))
+                               (:projects app)
+                             ))
+                      ))
 
 (defcomponent week-view [app]
               (render [this]
@@ -114,10 +133,6 @@
                                      (ot/div {:class "day-col"}
                                              (ot/output {:class "day-label"}
                                                         (str (:name day) " " (unparse-date (:date day))))
-
-                                             (om/build-all project-row (:projects app) {:opts
-                                                                                        {:day key
-                                                                                         :projects (:projects app)}})
                                              ))
                                    (week-dates))
                               )))
@@ -128,6 +143,7 @@
                       (ot/div {:class "column-main"}
                               (dom/h1 nil (str (:text app) " " (:date app)))
                               (om/build week-view app)
+                              (om/build project-entries app)
                               )
                       ))
 
