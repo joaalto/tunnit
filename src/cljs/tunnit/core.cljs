@@ -6,6 +6,7 @@
             [om-tools.dom :as ot :include-macros true]
             [om-tools.core :refer-macros [defcomponent]]
             [clojure.string :as str]
+            [tunnit.mock-data :as data]
             ))
 
 (enable-console-print!)
@@ -26,42 +27,10 @@
    7 {:name "Su" :date ""}
    })
 
-(def project-seq
-  [{:id 111
-    :name "Projekti 1"
-    :entries {
-              1 {:hours 4.5}
-              2 {:hours 7.5}
-              7 {:hours 2.5}
-              }
-    }
-   {:id 222
-    :name "Projekti 2"
-    :entries {
-              1 {:hours 3.5}
-              2 {:hours 0}
-              3 {:hours 7.5}
-              7 {:hours 1.5}
-              }
-    }
-   {:id 333
-    :name "Projekti 3"
-    :entries {
-              1 {:hours 3.5}
-              2 {:hours 0}
-              3 {:hours 7.5}
-              4 {:hours 7.5}
-              5 {:hours 7.5}
-              6 {:hours 7.5}
-              7 {:hours 5.5}
-              }
-    }
-   ])
-
 (def app-state (atom {
                       :text (str "Viikko " (week-nr))
                       :date ""
-                      :projects project-seq}))
+                      :projects (data/project-seq)}))
 
 (def date-format (f/formatter "dd.MM."))
 
