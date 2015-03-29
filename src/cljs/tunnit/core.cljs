@@ -51,41 +51,42 @@
   (map-kv day-map count-date))
 
 (defcomponent project-entries [app]
-              (render [this]
-                      (ot/div
-                        (map (fn [project]
-                               (ot/div {:class "project-row"}
-                               (for [day (range 1 8)]
-                                 (let [hours
-                                       (get-in project [:entries day :hours])]
-                                   (println "day: " day "hours: " hours)
-                                   (ot/input {:class "hour-entry" :value hours})
-                                   )
-                                 )))
-                               (:projects app)
-                             ))
-                      ))
+  (render [this]
+    (ot/div
+      (map (fn [project]
+             (ot/div {:class "project-row"}
+
+                     (for [day (range 1 8)]
+                       (let [hours
+                             (get-in project [:entries day :hours])]
+                         (println "day: " day "hours: " hours)
+                         (ot/input {:class "hour-entry" :value hours})
+                         )
+                       )))
+           (:projects app)
+           ))
+    ))
 
 (defcomponent week-view [app]
-              (render [this]
-                      (ot/div {:class "week-row"}
-                              (map (fn [[key day]]
-                                     (ot/div {:class "day-col"}
-                                             (ot/output {:class "day-label"}
-                                                        (str (:name day) " " (unparse-date (:date day))))
-                                             ))
-                                   (week-dates))
-                              )))
+  (render [this]
+    (ot/div {:class "week-row"}
+            (map (fn [[key day]]
+                   (ot/div {:class "day-col"}
+                           (ot/output {:class "day-label"}
+                                      (str (:name day) " " (unparse-date (:date day))))
+                           ))
+                 (week-dates))
+            )))
 
 (defcomponent app-view [app owner]
-              (render [this]
-                      (print (f/show-formatters))
-                      (ot/div {:class "column-main"}
-                              (dom/h1 nil (str (:text app) " " (:date app)))
-                              (om/build week-view app)
-                              (om/build project-entries app)
-                              )
-                      ))
+  (render [this]
+    (print (f/show-formatters))
+    (ot/div {:class "column-main"}
+            (dom/h1 nil (str (:text app) " " (:date app)))
+            (om/build week-view app)
+            (om/build project-entries app)
+            )
+    ))
 
 (defn main []
   (om/root
