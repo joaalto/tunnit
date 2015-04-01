@@ -54,12 +54,12 @@
   (render [this]
     (ot/div
       (map (fn [project]
-             (ot/div {:class "project-row"}
+             (ot/div {:id "project-row" :class "project-row"}
+                     (ot/input {:type "text" :value (:name project)})
 
                      (for [day (range 1 8)]
                        (let [hours
                              (get-in project [:entries day :hours])]
-                         (println "day: " day "hours: " hours)
                          (ot/input {:class "hour-entry" :value hours})
                          )
                        )))
@@ -70,12 +70,14 @@
 (defcomponent week-view [app]
   (render [this]
     (ot/div {:class "week-row"}
-            (map (fn [[key day]]
-                   (ot/div {:class "day-col"}
-                           (ot/output {:class "day-label"}
-                                      (str (:name day) " " (unparse-date (:date day))))
-                           ))
-                 (week-dates))
+            (ot/div {:class "day-row"}
+                    (map (fn [[key day]]
+                           (ot/div {:class "day-col"}
+                                   (ot/output {:class "day-label"}
+                                              (str (:name day) " " (unparse-date (:date day))))
+                                   ))
+                         (week-dates))
+                    )
             )))
 
 (defcomponent app-view [app owner]
