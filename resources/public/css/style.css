@@ -3,29 +3,35 @@
 }
 
 .day-label {
-  margin: 2em;
+  margin: 1em;
+  font-size: 11pt;
 }
 
 .day-col {
   float: left;
-  width: 138px;
+  width: 123px;
 }
 
 .hour-entry {
-  width: 133px;
+  width: 120px;
 }
 
 .project-row {
   float: left;
 }
 
+.project-name {
+  width: 200px;
+  margin-right: 4px;
+}
+
 .day-row {
-  margin-left: 133px;
+  margin-left: 228px;
 }
 
 .column-main {
-  width: 80%;
-  margin-left: 10em;
+  width: 100%;
+  margin-left: 5em;
 }
 
 h1 {
