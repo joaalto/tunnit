@@ -50,17 +50,28 @@
 (defn week-dates []
   (map-kv day-map count-date))
 
+(defn handle-change [e]
+  (print (str "value: " (.. e -target -value))))
+
 (defcomponent project-entries [app]
   (render [this]
     (ot/div
       (map (fn [project]
              (ot/div {:id "project-row" :class "project-row"}
-                     (ot/input {:class "project-name" :type "text" :value (:name project)})
+                     (ot/input {
+                                :class "project-name"
+                                :type "text"
+                                :value (:name project)
+                                :on-change #(handle-change %)})
 
                      (for [day (range 1 8)]
                        (let [hours
                              (get-in project [:entries day :hours])]
-                         (ot/input {:class "hour-entry" :value hours})))))
+                         (ot/input {
+                                    :class "hour-entry"
+                                    :value hours
+                                    :on-change #(handle-change %)}
+                                   )))))
            (:projects app)))))
 
 (defcomponent week-view [app]
