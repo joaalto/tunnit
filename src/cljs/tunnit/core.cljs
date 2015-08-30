@@ -27,10 +27,10 @@
    7 {:name "Su" :date ""}
    })
 
-(def app-state (atom {
-                      :text (str "Viikko " (week-nr))
-                      :date ""
-                      :projects (data/project-seq)}))
+(defonce app-state (atom {
+                          :text (str "Viikko " (week-nr))
+                          :date ""
+                          :projects (data/project-map)}))
 
 (def date-format (f/formatter "dd.MM."))
 
@@ -50,13 +50,20 @@
 (defn week-dates []
   (map-kv day-map count-date))
 
-(defn handle-change [e project day]
+(defn handle-change [owner e project day]
   (print (str "value: " (.. e -target -value)
               ", project: " (:name @project)
-              ", day: " day)))
+              ", day: " day))
 
-(defcomponent project-entries [app]
+  (om/set-state! owner; app-state
+                 [:projects (:id @project) :entries day]
+                 (.. e -target -value))
+  (print (om/get-state owner))
+  )
+
+(defcomponent project-entries [app owner]
   (render [this]
+    ;(print (om/get-state owner))
     (ot/div
       (map (fn [project]
              (ot/div {:id "project-row" :class "project-row"}
@@ -71,9 +78,9 @@
                          (ot/input {
                                     :class "hour-entry"
                                     :value hours
-                                    :on-change #(handle-change % project day)}
+                                    :on-change #(handle-change owner % project day)}
                                    )))))
-           (:projects app)))))
+           (vals (:projects app))))))
 
 (defcomponent week-view [app]
   (render [this]
@@ -87,7 +94,7 @@
 
 (defcomponent app-view [app owner]
   (render [this]
-    (print (f/show-formatters))
+    ;(print (f/show-formatters))
     (ot/div {:class "column-main"}
             (dom/h1 nil (str (:text app) " " (:date app)))
             (om/build week-view app)
